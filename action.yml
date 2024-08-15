@@ -13,6 +13,14 @@ inputs:
     description: "Semicolon separated list of SDK components that should be made available"
     required: false
     default: 'native'
+  install-hvigor:
+    description: "Whether to install the hvigor and hvigor-ohos-plugin npm modules"
+    required: false
+    default: false
+  hvigor-version:
+    description: "The version of hvigor and hvigor-ohos-plugin npm modules to install"
+    required: false
+    default: '5'
 outputs:
   sdk-path:
     description: "Directory of the OpenHarmony SDK"
@@ -52,6 +60,23 @@ runs:
       env:
         INPUT_VERSION: "${{ inputs.version }}"
         INPUT_COMPONENTS: "${{ inputs.components }}"
+    - name: Install nodejs for hvigor
+      if: ${{ inputs.install-hvigor == true }}
+      uses: actions/setup-node@4
+      with:
+        node-version: 18
+    - name: Download and install hvigor tools
+      shell: bash
+      if: ${{ inputs.install-hvigor == true }}
+      run: |
+        echo '@ohos:registry=https://repo.harmonyos.com/npm/' > ~/.npmrc
+        npm install @ohos/hvigor@{HVIGOR_VERSION}
+        npm install @ohos/hvigor-oho-plugin@{HVIGOR_VERSION}
+        ls -l node_modules
+        echo "hvigor-path=${`pwd`/node_modules/bin}" >> "$GITHUB_OUTPUT"
+      working-directory: ${{ github.action_path }}
+      env:
+        HVIGOR_VERSION: "${{ inputs.hvigor-version }}"
     - name: Set Outputs
       id: set_outputs
       shell: bash
@@ -62,7 +87,7 @@ runs:
         echo "ohos_sdk_native=${OHOS_SDK_NATIVE}" >> "$GITHUB_OUTPUT"
         cd "${OHOS_SDK_NATIVE}"
         SDK_VERSION="$(jq .version < oh-uni-package.json )"
-        API_VERSION="$(jq .apiVersion < oh-uni-package.json )"  
+        API_VERSION="$(jq .apiVersion < oh-uni-package.json )"
         echo "sdk-version=${SDK_VERSION}" >> "$GITHUB_OUTPUT"
         echo "api-version=${API_VERSION}" >> "$GITHUB_OUTPUT"
 
