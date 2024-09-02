@@ -37,7 +37,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ~/ohos-sdk
-        key: "${{ runner.os }}-ohos-sdk-${{ inputs.version }}"
+        key: "${{ runner.os }}-ohos-sdk-${{ inputs.version }}-${{ inputs.components }}"
       if: ${{ inputs.cache == 'true' }}
     - name: Set GitHub Path
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
