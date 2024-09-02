@@ -67,8 +67,8 @@ runs:
         cd "${OHOS_SDK_NATIVE}"
         SDK_VERSION="$(jq -r .version < oh-uni-package.json )"
         API_VERSION="$(jq -r .apiVersion < oh-uni-package.json )"
-        if [ "$INPUT_FIXUP_PATH" = "true" ]; then
-          OHOS_SDK_NATIVE="$(cd $HOME/ohos-sdk/*/$API_VERSION/native && pwd)"
+        if [ "${INPUT_FIXUP_PATH}" = "true" ]; then
+          OHOS_SDK_NATIVE="$(cd $HOME/ohos-sdk/*/${API_VERSION}/native && pwd)"
         fi
         echo "OHOS_SDK_NATIVE=${OHOS_SDK_NATIVE}" >> "$GITHUB_ENV"
         echo "ohos_sdk_native=${OHOS_SDK_NATIVE}" >> "$GITHUB_OUTPUT"
