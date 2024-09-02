@@ -54,5 +54,8 @@ for COMPONENT in ${COMPONENTS[@]}
 do
     echo "Extracting component ${COMPONENT}"
     unzip ${COMPONENT}-*.zip
+    API_VERSION=$(cat ${COMPONENT}/oh-uni-package.json | jq -r '.apiVersion')
+    mkdir -p ${API_VERSION}
+    ln -s ../${COMPONENT} ${API_VERSION}
 done
 rm ./*.zip
