@@ -13,6 +13,10 @@ inputs:
     description: "Semicolon separated list of SDK components that should be made available"
     required: false
     default: 'native'
+  fixup-path:
+    description: "Whether to fixup the output paths so that the components appear under api level directory"
+    required: false
+    default: false
 outputs:
   sdk-path:
     description: "Directory of the OpenHarmony SDK"
@@ -55,14 +59,19 @@ runs:
     - name: Set Outputs
       id: set_outputs
       shell: bash
+      env:
+        INPUT_FIXUP_PATH: ${{ inputs.fixup-path }}
       run: |
         echo "sdk-path=$HOME/ohos-sdk" >> "$GITHUB_OUTPUT"
         OHOS_SDK_NATIVE="$(cd $HOME/ohos-sdk/*/native && pwd)"
         cd "${OHOS_SDK_NATIVE}"
         SDK_VERSION="$(jq -r .version < oh-uni-package.json )"
         API_VERSION="$(jq -r .apiVersion < oh-uni-package.json )"
-        echo "OHOS_SDK_NATIVE=${OHOS_SDK_NATIVE}/${API_VERSION}" >> "$GITHUB_ENV"
-        echo "ohos_sdk_native=${OHOS_SDK_NATIVE}/${API_VERSION}" >> "$GITHUB_OUTPUT"
+        if [ "$INPUT_FIXUP_PATH" = "true" ]; then
+          OHOS_SDK_NATIVE="$(cd $HOME/ohos-sdk/*/$API_VERSION/native && pwd)"
+        fi
+        echo "OHOS_SDK_NATIVE=${OHOS_SDK_NATIVE}" >> "$GITHUB_ENV"
+        echo "ohos_sdk_native=${OHOS_SDK_NATIVE}" >> "$GITHUB_OUTPUT"
         echo "sdk-version=${SDK_VERSION}" >> "$GITHUB_OUTPUT"
         echo "api-version=${API_VERSION}" >> "$GITHUB_OUTPUT"
 
