@@ -55,7 +55,9 @@ do
     echo "Extracting component ${COMPONENT}"
     unzip ${COMPONENT}-*.zip
     API_VERSION=$(cat ${COMPONENT}/oh-uni-package.json | jq -r '.apiVersion')
-    mkdir -p ${API_VERSION}
-    ln -s ../${COMPONENT} ${API_VERSION}
+    if [ "$INPUT_FIXUP_PATH" = "true" ]; then
+        mkdir -p ${API_VERSION}
+        mv ${COMPONENT} "${API_VERSION}/"
+    fi
 done
 rm ./*.zip
